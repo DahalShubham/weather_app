@@ -258,6 +258,7 @@
       padding: 0 16px 20px;
       margin-top: -22px;
       display: grid;
+      grid-template-columns: minmax(0, 1fr);
       gap: 16px;
     }
 
@@ -318,36 +319,60 @@
       color: var(--muted);
     }
 
-    .hourly {
-      display: flex;
-      overflow-x: auto;
-      padding-bottom: 6px;
-    }
-
-    .hour {
-      flex: 0 0 70px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
-      border-right: 1px solid var(--divider);
-      font-size: 14px;
-    }
-
-    .hour:last-child {
-      border-right: none;
-    }
-
-    .hour span {
+    .card h3 small {
+      margin-left: 8px;
+      font-size: 12px;
+      font-weight: 400;
       color: var(--muted);
     }
 
-    .hour i {
-      font-size: 24px;
+    .hourly {
+      overflow-x: auto;
+      padding-bottom: 8px;
     }
 
-    .hour b {
-      font-size: 17px;
+    .hwrap { width: max-content; }
+
+    .hrow { display: flex; }
+
+    .hc {
+      flex: 0 0 64px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+    }
+
+    .hc > span { color: var(--muted); }
+    .hc > i { font-size: 22px; }
+    .hc > small { font-size: 12px; color: var(--muted); }
+    .hc.now > span { color: var(--text); font-weight: bold; }
+
+    .hspark { display: block; }
+
+    .hspark text {
+      font-size: 12px;
+      font-weight: bold;
+      fill: var(--text);
+      text-anchor: middle;
+    }
+
+    .rb {
+      width: 12px;
+      height: 30px;
+      display: flex;
+      align-items: flex-end;
+      overflow: hidden;
+      border-radius: 6px;
+      background: var(--divider);
+    }
+
+    .rb i {
+      display: block;
+      width: 100%;
+      border-radius: 6px;
+      background: var(--line-min);
     }
 
     .legend {
@@ -371,11 +396,41 @@
     .legend .l-max::before { background: var(--line-max); }
     .legend .l-min::before { background: var(--line-min); }
 
+    .legend .l-wind::before { background: var(--accent); }
+
+    .tabs {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .tab {
+      flex: 1;
+      padding: 8px 0;
+      border: 1px solid var(--divider);
+      border-radius: 999px;
+      background: transparent;
+      color: var(--muted);
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .tab.active {
+      border-color: var(--accent);
+      background: var(--accent);
+      color: #ffffff;
+    }
+
+    .chartbox {
+      position: relative;
+      margin-bottom: 8px;
+    }
+
     .chart {
       width: 100%;
       height: auto;
       display: block;
-      margin-bottom: 10px;
+      touch-action: pan-y;
     }
 
     .chart .line {
@@ -385,16 +440,18 @@
       stroke-linejoin: round;
     }
 
-    .chart .line.max { stroke: var(--line-max); }
-    .chart .line.min { stroke: var(--line-min); }
-
     .chart .dot { stroke: var(--outer); stroke-width: 2; }
-    .chart .dot.max { fill: var(--line-max); }
-    .chart .dot.min { fill: var(--line-min); }
+    .chart .bar { fill: var(--line-min); fill-opacity: 0.85; }
 
     .chart .grid {
       stroke: var(--divider);
       stroke-dasharray: 3 4;
+    }
+
+    .chart .guide {
+      stroke: var(--text);
+      stroke-opacity: 0.35;
+      stroke-dasharray: 2 3;
     }
 
     .chart text {
@@ -403,13 +460,33 @@
       text-anchor: middle;
     }
 
-    .chart text.dl {
-      fill: var(--muted);
+    .chart text.dl { fill: var(--muted); }
+    .chart text.yl { fill: var(--muted); font-size: 10px; text-anchor: end; }
+
+    .tip {
+      position: absolute;
+      top: -6px;
+      z-index: 3;
+      transform: translateX(-50%);
+      padding: 8px 12px;
+      border: 1px solid var(--divider);
+      border-radius: 12px;
+      background: var(--outer);
+      box-shadow: 0 6px 18px var(--shadow);
+      font-size: 12px;
+      line-height: 1.5;
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.15s;
     }
+
+    .tip b { display: block; font-size: 13px; }
+    .tip span { display: block; color: var(--muted); }
 
     .row {
       display: grid;
-      grid-template-columns: 62px 34px 1fr 38px 38px;
+      grid-template-columns: 54px 28px 1fr 30px 70px 30px;
       align-items: center;
       gap: 6px;
       padding: 12px 0;
@@ -417,10 +494,27 @@
     }
 
     .row .dn { font-weight: bold; }
-    .row i { font-size: 20px; text-align: center; }
+    .row > i { font-size: 20px; text-align: center; }
     .row .dt { font-size: 13px; color: var(--muted); }
-    .row b { text-align: right; }
+    .row .dt small { display: block; margin-top: 2px; font-size: 11px; }
+    .row .dt small i { margin-right: 3px; color: var(--line-min); }
     .row .lo { text-align: right; color: var(--muted); }
+    .row .hi { font-weight: bold; }
+
+    .rng {
+      position: relative;
+      height: 6px;
+      border-radius: 3px;
+      background: var(--divider);
+    }
+
+    .rng i {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      border-radius: 3px;
+      background: linear-gradient(90deg, var(--line-min), var(--line-max));
+    }
 
     .tagline {
       display: flex;
@@ -448,6 +542,7 @@
       .now > i { font-size: 62px; }
       .stats b { font-size: 15px; }
       .stats p { font-size: 12px; }
+      .row { grid-template-columns: 46px 24px 1fr 28px 54px 28px; gap: 5px; }
     }
   </style>
 </head>
@@ -545,8 +640,8 @@
     async function getWeather(latitude, longitude) {
       const url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}` +
         `&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,wind_direction_10m,pressure_msl,weather_code,is_day` +
-        `&hourly=temperature_2m,weather_code,visibility` +
-        `&daily=weather_code,temperature_2m_max,temperature_2m_min` +
+        `&hourly=temperature_2m,weather_code,visibility,precipitation_probability` +
+        `&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,precipitation_sum,wind_speed_10m_max` +
         `&timezone=auto&forecast_days=7`;
       const res = await fetch(url);
       const data = await res.json();
@@ -557,67 +652,168 @@
       return (h % 12 || 12) + (h < 12 ? " AM" : " PM");
     }
 
+    const COL = 64;
+
+    function smooth(pts) {
+      let d = `M${pts[0][0]},${pts[0][1]}`;
+      for (let i = 0; i < pts.length - 1; i++) {
+        const p0 = pts[i - 1] || pts[i], p1 = pts[i], p2 = pts[i + 1], p3 = pts[i + 2] || p2;
+        d += ` C${p1[0] + (p2[0] - p0[0]) / 6},${p1[1] + (p2[1] - p0[1]) / 6}` +
+             ` ${p2[0] - (p3[0] - p1[0]) / 6},${p2[1] - (p3[1] - p1[1]) / 6} ${p2[0]},${p2[1]}`;
+      }
+      return d;
+    }
+
     function buildHourly(data, idx) {
-      let html = "";
-      for (let i = idx; i < idx + 12 && i < data.hourly.time.length; i++) {
-        const h = parseInt(data.hourly.time[i].slice(11, 13));
+      const end = Math.min(idx + 24, data.hourly.time.length);
+      const hrs = [];
+      for (let i = idx; i < end; i++) {
+        const t = data.hourly.time[i];
+        const h = parseInt(t.slice(11, 13));
         const isNow = i === idx;
         const isDay = isNow ? data.current.is_day === 1 : (h >= 6 && h < 18);
         const code = isNow ? data.current.weather_code : data.hourly.weather_code[i];
-        const temp = isNow ? data.current.temperature_2m : data.hourly.temperature_2m[i];
-        const info = getInfo(code, isDay);
-        html += `
-          <div class="hour">
-            <span>${isNow ? "Now" : fmtHour(h)}</span>
-            ${iconHTML(info.icon)}
-            <b>${Math.round(temp)}°</b>
-          </div>`;
+        hrs.push({
+          isNow,
+          label: isNow ? "Now" : (h === 0 ? dayName(t.slice(0, 10)) : fmtHour(h)),
+          icon: iconHTML(getInfo(code, isDay).icon),
+          temp: isNow ? data.current.temperature_2m : data.hourly.temperature_2m[i],
+          rain: data.hourly.precipitation_probability[i] ?? 0,
+        });
       }
-      return html;
+
+      const n = hrs.length, W = n * COL, H = 100, PT = 26, PB = 14;
+      const lo = Math.min(...hrs.map((x) => x.temp));
+      const hi = Math.max(...hrs.map((x) => x.temp));
+      const y = (v) => PT + (hi - v) / (hi - lo || 1) * (H - PT - PB);
+      const pts = hrs.map((x, i) => [COL * i + COL / 2, y(x.temp)]);
+      const line = smooth(pts);
+
+      let svg = `<svg class="hspark" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">` +
+        `<defs><linearGradient id="hg" x1="0" y1="0" x2="0" y2="1">` +
+        `<stop offset="0" style="stop-color:var(--line-max);stop-opacity:.4"/>` +
+        `<stop offset="1" style="stop-color:var(--line-max);stop-opacity:0"/>` +
+        `</linearGradient></defs>` +
+        `<path d="${line} L${pts[n - 1][0]},${H} L${pts[0][0]},${H} Z" fill="url(#hg)"/>` +
+        `<path d="${line}" fill="none" stroke-width="3" stroke-linecap="round" style="stroke:var(--line-max)"/>`;
+
+      hrs.forEach((x, i) => {
+        svg += `<circle cx="${pts[i][0]}" cy="${pts[i][1]}" r="${x.isNow ? 6 : 4}" stroke-width="2" ` +
+               `style="fill:${x.isNow ? "var(--text)" : "var(--line-max)"};stroke:var(--outer)"/>`;
+        svg += `<text x="${pts[i][0]}" y="${pts[i][1] - 11}">${Math.round(x.temp)}°</text>`;
+      });
+      svg += `</svg>`;
+
+      const top = hrs.map((x) =>
+        `<div class="hc${x.isNow ? " now" : ""}"><span>${x.label}</span>${x.icon}</div>`).join("");
+      const rain = hrs.map((x) =>
+        `<div class="hc"><div class="rb"><i style="height:${x.rain}%"></i></div><small>${x.rain}%</small></div>`).join("");
+
+      return `<div class="hwrap"><div class="hrow">${top}</div>${svg}<div class="hrow">${rain}</div></div>`;
     }
 
-    function buildChart(daily) {
-      const W = 500, H = 170, top = 28, bottom = 40;
-      const maxs = daily.temperature_2m_max;
-      const mins = daily.temperature_2m_min;
-      const hi = Math.max(...maxs);
-      const lo = Math.min(...mins);
-      const range = hi - lo || 1;
-      const colW = W / maxs.length;
+    const CW = 500, CH = 230, PL = 36, PR = 12, PT = 30, PB = 34;
 
-      const x = (i) => colW * i + colW / 2;
-      const y = (v) => top + ((hi - v) / range) * (H - top - bottom);
+    function renderDayChart(daily, mode) {
+      const n = daily.time.length;
+      const colW = (CW - PL - PR) / n;
+      const cx = (i) => PL + colW * i + colW / 2;
+      const hiT = daily.temperature_2m_max, loT = daily.temperature_2m_min;
+      let series, lo, hi, unit = "", legend, steps = 3;
 
-      const maxPoints = maxs.map((v, i) => `${x(i)},${y(v)}`).join(" ");
-      const minPoints = mins.map((v, i) => `${x(i)},${y(v)}`).join(" ");
+      if (mode === "rain") {
+        series = [{ v: daily.precipitation_probability_max.map((v) => v ?? 0), c: "--line-min" }];
+        lo = 0; hi = 100; unit = "%"; steps = 4;
+        legend = `<span class="l-min">Chance of rain</span>`;
+      } else if (mode === "wind") {
+        const w = daily.wind_speed_10m_max;
+        series = [{ v: w, c: "--accent" }];
+        lo = 0; hi = Math.max(12, Math.ceil(Math.max(...w) / 12) * 12);
+        legend = `<span class="l-wind">Max wind (km/h)</span>`;
+      } else {
+        series = [{ v: hiT, c: "--line-max" }, { v: loT, c: "--line-min" }];
+        lo = Math.floor(Math.min(...loT)) - 1;
+        hi = lo + Math.ceil((Math.ceil(Math.max(...hiT)) + 1 - lo) / 3) * 3;
+        unit = "°";
+        legend = `<span class="l-max">Max</span><span class="l-min">Min</span>`;
+      }
 
-      let svg = `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="7 day temperature chart">`;
+      const cy = (v) => PT + (hi - v) / (hi - lo || 1) * (CH - PT - PB);
+      const base = CH - PB;
 
-      [0, 0.5, 1].forEach((p) => {
-        const gy = top + p * (H - top - bottom);
-        svg += `<line class="grid" x1="0" y1="${gy}" x2="${W}" y2="${gy}"></line>`;
+      let svg = `<svg class="chart" viewBox="0 0 ${CW} ${CH}" role="img" aria-label="7 day ${mode} chart"><defs>`;
+      series.forEach((s, k) => {
+        svg += `<linearGradient id="dg${k}" x1="0" y1="0" x2="0" y2="1">` +
+               `<stop offset="0" style="stop-color:var(${s.c});stop-opacity:.35"/>` +
+               `<stop offset="1" style="stop-color:var(${s.c});stop-opacity:0"/></linearGradient>`;
       });
+      svg += `</defs>`;
 
-      svg += `<polyline class="line max" points="${maxPoints}"></polyline>`;
-      svg += `<polyline class="line min" points="${minPoints}"></polyline>`;
+      for (let t = 0; t <= steps; t++) {
+        const v = lo + (hi - lo) * t / steps, y = cy(v);
+        svg += `<line class="grid" x1="${PL}" y1="${y}" x2="${CW - PR}" y2="${y}"></line>`;
+        svg += `<text class="yl" x="${PL - 8}" y="${y + 4}">${Math.round(v)}${unit}</text>`;
+      }
 
-      maxs.forEach((v, i) => {
-        svg += `<circle class="dot max" cx="${x(i)}" cy="${y(v)}" r="5"></circle>`;
-        svg += `<text x="${x(i)}" y="${y(v) - 10}">${Math.round(v)}°</text>`;
-      });
-
-      mins.forEach((v, i) => {
-        svg += `<circle class="dot min" cx="${x(i)}" cy="${y(v)}" r="5"></circle>`;
-        svg += `<text x="${x(i)}" y="${y(v) + 20}">${Math.round(v)}°</text>`;
-      });
+      if (mode === "rain") {
+        const bw = colW * 0.5;
+        series[0].v.forEach((v, i) => {
+          const h = Math.max(base - cy(v), 2);
+          svg += `<rect class="bar" x="${cx(i) - bw / 2}" y="${base - h}" width="${bw}" height="${h}" rx="6"></rect>`;
+          svg += `<text x="${cx(i)}" y="${base - h - 7}">${v}%</text>`;
+        });
+      } else {
+        series.forEach((s, k) => {
+          const pts = s.v.map((v, i) => [cx(i), cy(v)]);
+          const d = smooth(pts);
+          svg += `<path d="${d} L${pts[n - 1][0]},${base} L${pts[0][0]},${base} Z" fill="url(#dg${k})"></path>`;
+          svg += `<path class="line" style="stroke:var(${s.c})" d="${d}"></path>`;
+          s.v.forEach((v, i) => {
+            const below = mode === "temp" && k === 1;
+            svg += `<circle class="dot" style="fill:var(${s.c})" cx="${pts[i][0]}" cy="${pts[i][1]}" r="4.5"></circle>`;
+            svg += `<text x="${pts[i][0]}" y="${pts[i][1] + (below ? 20 : -10)}">${Math.round(v)}${mode === "temp" ? "°" : ""}</text>`;
+          });
+        });
+      }
 
       daily.time.forEach((date, i) => {
-        const name = i === 0 ? "Today" : dayName(date);
-        svg += `<text class="dl" x="${x(i)}" y="${H - 6}">${name}</text>`;
+        svg += `<text class="dl" x="${cx(i)}" y="${CH - 10}">${i === 0 ? "Today" : dayName(date)}</text>`;
       });
+      svg += `<line class="guide" x1="0" x2="0" y1="${PT - 10}" y2="${base}" opacity="0"></line></svg>`;
 
-      svg += `</svg>`;
-      return svg;
+      const box = result.querySelector("#dayChart");
+      result.querySelector("#dayLegend").innerHTML = legend;
+      box.innerHTML = `<div class="tip"></div>${svg}`;
+
+      const el = box.querySelector("svg");
+      const tip = box.querySelector(".tip");
+      const guide = box.querySelector(".guide");
+
+      const show = (e) => {
+        const r = el.getBoundingClientRect();
+        const x = (e.clientX - r.left) / r.width * CW;
+        const i = Math.max(0, Math.min(n - 1, Math.floor((x - PL) / colW)));
+        const info = getInfo(daily.weather_code[i], true);
+        const gx = cx(i);
+        guide.setAttribute("x1", gx);
+        guide.setAttribute("x2", gx);
+        guide.setAttribute("opacity", 1);
+        tip.innerHTML =
+          `<b>${i === 0 ? "Today" : dayName(daily.time[i])} · ${info.text}</b>` +
+          `<span>${Math.round(hiT[i])}° / ${Math.round(loT[i])}°</span>` +
+          `<span>Rain ${daily.precipitation_probability_max[i] ?? 0}% · ${(daily.precipitation_sum[i] ?? 0).toFixed(1)} mm</span>` +
+          `<span>Wind up to ${Math.round(daily.wind_speed_10m_max[i])} km/h</span>`;
+        tip.style.left = Math.max(22, Math.min(78, gx / CW * 100)) + "%";
+        tip.style.opacity = 1;
+      };
+      const hide = () => {
+        guide.setAttribute("opacity", 0);
+        tip.style.opacity = 0;
+      };
+
+      el.addEventListener("pointermove", show);
+      el.addEventListener("pointerdown", show);
+      el.addEventListener("pointerleave", (e) => { if (e.pointerType === "mouse") hide(); });
     }
 
     function dayName(date) {
@@ -625,15 +821,23 @@
     }
 
     function buildDays(daily) {
+      const wlo = Math.min(...daily.temperature_2m_min);
+      const whi = Math.max(...daily.temperature_2m_max);
+      const span = whi - wlo || 1;
       return daily.time.map((date, i) => {
         const info = getInfo(daily.weather_code[i], true);
+        const mn = daily.temperature_2m_min[i], mx = daily.temperature_2m_max[i];
+        const left = (mn - wlo) / span * 100;
+        const width = Math.min(Math.max((mx - mn) / span * 100, 8), 100 - left);
+        const rain = daily.precipitation_probability_max[i] ?? 0;
         return `
           <div class="row">
             <span class="dn">${i === 0 ? "Today" : dayName(date)}</span>
             ${iconHTML(info.icon)}
-            <span class="dt">${info.text}</span>
-            <b>${Math.round(daily.temperature_2m_max[i])}°</b>
-            <span class="lo">${Math.round(daily.temperature_2m_min[i])}°</span>
+            <span class="dt">${info.text}<small><i class="fa-solid fa-droplet"></i>${rain}%</small></span>
+            <span class="lo">${Math.round(mn)}°</span>
+            <span class="rng"><i style="left:${left}%;width:${width}%"></i></span>
+            <b class="hi">${Math.round(mx)}°</b>
           </div>`;
       }).join("");
     }
@@ -694,20 +898,33 @@
             </div>
 
             <div class="card">
-              <h3>Hourly Forecast</h3>
+              <h3>Hourly Forecast<small>Next 24 hours</small></h3>
+              <div class="legend"><span class="l-max">Temperature</span><span class="l-min">Chance of rain</span></div>
               <div class="hourly">${buildHourly(data, idx)}</div>
             </div>
 
             <div class="card">
               <h3>7 Day Forecast</h3>
-              <div class="legend"><span class="l-max">Max</span><span class="l-min">Min</span></div>
-              ${buildChart(data.daily)}
+              <div class="tabs">
+                <button class="tab active" data-mode="temp">Temperature</button>
+                <button class="tab" data-mode="rain">Rain</button>
+                <button class="tab" data-mode="wind">Wind</button>
+              </div>
+              <div class="legend" id="dayLegend"></div>
+              <div class="chartbox" id="dayChart"></div>
               ${buildDays(data.daily)}
             </div>
           </div>
 
           <div class="tagline"><span></span><em>Better Weather &nbsp; Brighter Days</em><span></span></div>
         `;
+
+        const tabs = result.querySelectorAll(".tab");
+        tabs.forEach((t) => t.addEventListener("click", () => {
+          tabs.forEach((x) => x.classList.toggle("active", x === t));
+          renderDayChart(data.daily, t.dataset.mode);
+        }));
+        renderDayChart(data.daily, "temp");
       } catch (error) {
         result.innerHTML = `<p class="msg error">${error.message}</p>`;
       }
